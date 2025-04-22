@@ -64,12 +64,16 @@ M.get_complete_fn = function(complete_opts)
         local items = {}
         for _, issue in ipairs(parsed.issues) do
           for _, item_format in ipairs(complete_opts.items) do
+            local label = string.format(item_format[1], unpack(get_fields(issue, item_format[2])))
             table.insert(items, {
-              label = string.format(item_format[1], unpack(get_fields(issue, item_format[2]))),
+              label = label,                     -- shown in the completion menu
+              insertText = issue.key,           -- only insert the issue tag
               documentation = {
                 kind = 'plaintext',
-                value = string.format('[%s] %s\n\n%s', issue.key, (issue.fields or {}).summary or '',
-                  string.gsub((issue.fields or {}).description or '', '\r', '')),
+                value = string.format('[%s] %s\n\n%s', issue.key,
+                  (issue.fields or {}).summary or '',
+                  string.gsub(tostring((issue.fields or {}).description or ''), '\r', '')
+                ),
               },
             })
           end
